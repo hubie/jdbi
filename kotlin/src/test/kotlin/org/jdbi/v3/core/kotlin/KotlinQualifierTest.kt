@@ -120,4 +120,18 @@ class KotlinQualifierTest {
     data class DataClassQualifiedVarProperty(val id:Int) {
         @Reversed var name: String? = null
     }
+
+    @Test
+    fun mapDataClassWithListProperty() {
+        handle.execute("insert into something (id, name) values (1, 'a')")
+
+        assertThat(handle.select("select * from something where name IN( <arr> )")
+            .bindKotlin(DataClassArrayPropertyFilter())
+            .mapTo<DataClassQualifiedConstructorParam>()
+            .one())
+            .isEqualTo(DataClassQualifiedConstructorParam(1, "abc"))
+    }
+
+    data class DataClassArrayPropertyFilter(val arr: List<String> = listOf("abc", "xyz"))
+
 }
